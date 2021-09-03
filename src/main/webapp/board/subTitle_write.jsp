@@ -38,19 +38,19 @@ String category = request.getParameter("category");
 <!-- toastr -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-<link rel="stylesheet" href="./css/reset.css" />
+<link rel="stylesheet" href="../css/reset.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet" />
-<!-- <link rel="stylesheet" href="./css/main.css" /> -->
-<link rel="stylesheet" href="./css/menu.css" />
-<link rel="stylesheet" href="./css/subTitle_write.css" />
+<!-- <link rel="stylesheet" href="../css/main.css" /> -->
+<link rel="stylesheet" href="../css/menu.css" />
+<link rel="stylesheet" href="../css/subTitle_write.css" />
  <%
 if (flag == 1) { //비로그인 시
-	out.println("<script src='./js/menu_logOut.js' defer></script>");
+	out.println("<script src='../js/menu_logOut.js' defer></script>");
 } else { // 로그인시
-	out.println("<script src='./js/main_logIn.js' defer></script>");
-	out.println("<script src='./js/menu_logeIn.js' defer></script>");
+	out.println("<script src='../js/main_logIn.js' defer></script>");
+	out.println("<script src='../js/menu_logeIn.js' defer></script>");
 }
 %>
 
@@ -63,7 +63,7 @@ if (flag == 1) { //비로그인 시
 
     <div class="main">
       <!-- nav bar include -->
- 	  <%@ include file="./nav_bar.jsp" %>
+ 	  <%@ include file="../nav_bar.jsp" %>
       <div class="content_wrap">
         <div class="center_wrap">
           <div class="write_box_bg">
@@ -109,5 +109,5 @@ if (flag == 1) { //비로그인 시
   </body>
   <!-- toast ui editor JS -->
   <!-- 꼭 editor 사용할 div 보다 아래에 넣어줘야 함 -->
-  <script src="./js/write_nomal_page.js" defer></script>
+  <script src="../js/write_nomal_page.js" defer></script>
 </html>

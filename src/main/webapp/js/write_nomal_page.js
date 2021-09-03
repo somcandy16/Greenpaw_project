@@ -62,7 +62,7 @@ function sendImage(img, callBackFunc) {
 	$.ajax({
 		data: image,
 		type: "post",
-		url: "./save_img.jsp",
+		url: "../save_img.jsp",
 		contentType: false,
 		processData: false,
 		success: function (apiRes) {

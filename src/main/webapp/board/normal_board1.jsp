@@ -140,20 +140,20 @@ if(!field.equals("") && !keyword.equals("")){
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>GreenPaw</title>
-<link rel="stylesheet" href="./css/reset.css" />
+<link rel="stylesheet" href="../css/reset.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
 	href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap"
 	rel="stylesheet" />
-<link rel="stylesheet" href="./css/board.css" />
-<link rel="stylesheet" href="./css/menu.css" />
+<link rel="stylesheet" href="../css/board.css" />
+<link rel="stylesheet" href="../css/menu.css" />
 <%
 		if(flag == 1){ //비로그인 시
-			out.println("<script src='./js/menu_logOut.js' defer></script>");
+			out.println("<script src='../js/menu_logOut.js' defer></script>");
 		}else{ // 로그인시
-			out.println("<script src='./js/main_logIn.js' defer></script>");
-			out.println("<script src='./js/menu_logeIn.js' defer></script>");
+			out.println("<script src='../js/main_logIn.js' defer></script>");
+			out.println("<script src='../js/menu_logeIn.js' defer></script>");
 		}
 	
 	%>

@@ -74,7 +74,7 @@ if (flag == 1) { //비로그인 시
 					<li class="slides" id="carousel4"><a>배너 4</a></li>
 				</ul>
 				<ul class="category">
-					<li id="category1" ><a href="normal_board1.jsp?category=1">일반 게시판</a></li>
+					<li id="category1" ><a href="./board/normal_board1.jsp?category=1">일반 게시판</a></li>
 					<li id="category2"><a href="Thumbnail_board.jsp?categorySeq=5">썸네일 게시판</a></li>
 					<li id="category3"><a href="#">카테고리 3</a></li>
 					<li id="category4"><a href="#">카테고리 4</a></li>
