@@ -154,11 +154,81 @@ public class BoardDAO {
 			return datas;
 		}
 	
+		//페이지 개수  /*수정함*/
+		public PageTO boardList(PageTO PageTO,String category,String field,String keyword,String subtitle) {
+			Connection conn = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			      
+			if(field =="type" || field.equals("type")) {
+				field = "family_member_type";
+			}
+			      
+			 int cpage = PageTO.getCpage();
+			 int recordPerPage = PageTO.getRecordPerPage();
+			 int blockPerPage = PageTO.getBlockPerPage();
+			      
+			 try {
+				 conn = this.dataSource.getConnection();
+				 /*수정함*/
+				 String sql = "select category_seq, sub_title, sale_status, family_member_type, title, content, thumb_url, nickname, like_count, hit, date_format(created_at, '%Y-%m-%d') created_at, updated_at from board where category_seq=? and "+field+" like ? and sub_title=? and is_private=0  order by seq desc";
+				 pstmt = conn.prepareStatement( sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
+			     pstmt.setString(1, category);//추가
+			     pstmt.setString(2, "%"+keyword+"%");
+			     pstmt.setString(3, subtitle);
+			         
+			     rs = pstmt.executeQuery();
+			         
+			     rs.last();
+			     PageTO.setTotalRecord( rs.getRow() );
+			     rs.beforeFirst();
+			         
+			     PageTO.setTotalPage( ( ( PageTO.getTotalRecord() -1 ) / recordPerPage ) + 1 );
+			         
+			     int skip = (cpage -1)* recordPerPage;
+			     if( skip != 0 ) rs.absolute( skip );
+			         
+			     ArrayList<BoardTO> boardLists = new ArrayList<BoardTO>();
+			     for( int i=0 ; i<recordPerPage && rs.next() ; i++ ) {
+			     BoardTO to = new BoardTO();
+			     to.setCategorySeq( rs.getString( "category_seq" ) );
+			     to.setSubTitle( rs.getString( "sub_title" ) );
+			     to.setSaleStatus( rs.getString( "sale_status" ) );
+			     to.setFamilyMemberType( rs.getString( "family_member_type" ) );
+			     to.setTitle( rs.getString( "title" ) );
+			     to.setContent( rs.getString( "content" ) );
+			     to.setThumbUrl( rs.getString( "thumb_url" ) );
+			     to.setNickname( rs.getString( "nickname" ) );
+			     to.setLikeCount( rs.getString( "like_count" ) );
+			     to.setHit( rs.getString( "hit" ) );
+			     to.setCreatedAt( rs.getString( "created_at" ) );
+			     to.setUpdatedAt( rs.getString( "updated_at" ) );
+			            
+			     boardLists.add( to );
+			     	}
+			         
+			     PageTO.setPageList(boardLists);
+			         
+			     PageTO.setStartBlock( ( ( cpage -1 ) / blockPerPage ) * blockPerPage + 1 );
+			     PageTO.setEndBlock( ( ( cpage -1 ) / blockPerPage ) * blockPerPage + blockPerPage );
+			     if( PageTO.getEndBlock() >= PageTO.getTotalPage() ) {
+			    	PageTO.setEndBlock( PageTO.getTotalPage() );
+			     	}
+			  } catch(SQLException e) {
+				  System.out.println( "[에러] " + e.getMessage() );
+			  } finally {
+				  if( rs != null ) try { rs.close(); } catch( SQLException e ) {}
+			      if( pstmt != null ) try { pstmt.close(); } catch( SQLException e ) {}
+			      if( conn != null ) try { conn.close(); } catch( SQLException e ) {}
+			  }
+			      
+			    return PageTO;
+			  }	
 	
 	
 		
 		//검색
-		public ArrayList<BoardTO> getSearchList(String categorySeq,String field,String keyword,int page,int perPage){
+		public ArrayList<BoardTO> getSearchList(String categorySeq,String field,String keyword,PageTO pages){
 			
 			//System.out.println("검색"+categorySeq+"/"+field+"/"+keyword+"/"+page+"/"+perPage);
 			
@@ -179,8 +249,8 @@ public class BoardDAO {
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, categorySeq);
 				pstmt.setString(2, "%"+keyword+"%"); //검색 값
-				pstmt.setInt(3, (page-1)*10);
-				pstmt.setInt(4, perPage);
+				pstmt.setInt(3, (pages.getCpage()-1)*pages.getRecordPerPage());
+				pstmt.setInt(4, pages.getRecordPerPage());
 				
 				//System.out.println("카테고리명:"+categorySeq);
 				//System.out.println("필드값:"+field);
@@ -217,7 +287,7 @@ public class BoardDAO {
 			}
 		
 		//정렬기능
-		public ArrayList<BoardTO> listSort(String categorySeq,String field,String keyword,String sort,int page,int perPage){
+		public ArrayList<BoardTO> listSort(String categorySeq,String field,String keyword,String sort,PageTO pages){
 			
 			//System.out.println("검색"+categorySeq+"/"+field+"/"+keyword+"/"+page+"/"+perPage);
 			
@@ -238,14 +308,14 @@ public class BoardDAO {
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, categorySeq);
 				pstmt.setString(2, "%"+keyword+"%"); //검색 값
-				pstmt.setInt(3, (page-1)*10);
-				pstmt.setInt(4, perPage);
+				pstmt.setInt(3, (pages.getCpage()-1)*pages.getRecordPerPage());
+				pstmt.setInt(4, pages.getRecordPerPage());
 				
-				System.out.println("카테고리명:"+categorySeq);
-				System.out.println("필드값:"+field);
-				System.out.println("검색값:"+keyword);
-				System.out.println("각 목록 첫번째:"+page);
-				System.out.println("한페이지 리스트수"+perPage);
+				/*
+				 * System.out.println("카테고리명:"+categorySeq); System.out.println("필드값:"+field);
+				 * System.out.println("검색값:"+keyword); System.out.println("각 목록 첫번째:"+page);
+				 * System.out.println("한페이지 리스트수"+perPage);
+				 */
 				
 				rs = pstmt.executeQuery();
 				
@@ -261,8 +331,6 @@ public class BoardDAO {
 					to.setHit(rs.getString("hit"));
 					to.setCreatedAt(rs.getString("created_at"));
 					datas.add(to);
-					
-					
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -277,109 +345,58 @@ public class BoardDAO {
 		
 	
 		
-		//페이지 개수  /*수정함*/
-		public PageTO boardList(PageTO PageTO,String category,String field,String keyword) {
-		      Connection conn = null;
-		      PreparedStatement pstmt = null;
-		      ResultSet rs = null;
-		      
-		      if(field =="type" || field.equals("type")) {
-					field = "family_member_type";
-				}
-		      
-		      int cpage = PageTO.getCpage();
-		      int recordPerPage = PageTO.getRecordPerPage();
-		      int blockPerPage = PageTO.getBlockPerPage();
-		      
-		      try {
-		         conn = this.dataSource.getConnection();
-		         /*수정함*/
-		         String sql = "select category_seq, sub_title, sale_status, family_member_type, title, content, thumb_url, nickname, like_count, hit, date_format(created_at, '%Y-%m-%d') created_at, updated_at from board where category_seq=? and "+field+" like ? and is_private=0  order by seq desc";
-		         pstmt = conn.prepareStatement( sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY );
-		         pstmt.setString(1, category);//추가
-		         pstmt.setString(2, "%"+keyword+"%");
-		         
-		         rs = pstmt.executeQuery();
-		         
-		         rs.last();
-		         PageTO.setTotalRecord( rs.getRow() );
-		         rs.beforeFirst();
-		         
-		         PageTO.setTotalPage( ( ( PageTO.getTotalRecord() -1 ) / recordPerPage ) + 1 );
-		         
-		         int skip = (cpage -1)* recordPerPage;
-		         if( skip != 0 ) rs.absolute( skip );
-		         
-		         ArrayList<BoardTO> boardLists = new ArrayList<BoardTO>();
-		         for( int i=0 ; i<recordPerPage && rs.next() ; i++ ) {
-		            BoardTO to = new BoardTO();
-		            to.setCategorySeq( rs.getString( "category_seq" ) );
-		            to.setSubTitle( rs.getString( "sub_title" ) );
-		            to.setSaleStatus( rs.getString( "sale_status" ) );
-		            to.setFamilyMemberType( rs.getString( "family_member_type" ) );
-		            to.setTitle( rs.getString( "title" ) );
-		            to.setContent( rs.getString( "content" ) );
-		            to.setThumbUrl( rs.getString( "thumb_url" ) );
-		            to.setNickname( rs.getString( "nickname" ) );
-		            to.setLikeCount( rs.getString( "like_count" ) );
-		            to.setHit( rs.getString( "hit" ) );
-		            to.setCreatedAt( rs.getString( "created_at" ) );
-		            to.setUpdatedAt( rs.getString( "updated_at" ) );
-		            
-		            boardLists.add( to );
-		         }
-		         
-		         PageTO.setPageList(boardLists);
-		         
-		         PageTO.setStartBlock( ( ( cpage -1 ) / blockPerPage ) * blockPerPage + 1 );
-		         PageTO.setEndBlock( ( ( cpage -1 ) / blockPerPage ) * blockPerPage + blockPerPage );
-		         if( PageTO.getEndBlock() >= PageTO.getTotalPage() ) {
-		        	 PageTO.setEndBlock( PageTO.getTotalPage() );
-		         }
-		      } catch(SQLException e) {
-		         System.out.println( "[에러] " + e.getMessage() );
-		      } finally {
-		         if( rs != null ) try { rs.close(); } catch( SQLException e ) {}
-		         if( pstmt != null ) try { pstmt.close(); } catch( SQLException e ) {}
-		         if( conn != null ) try { conn.close(); } catch( SQLException e ) {}
-		      }
-		      
-		      return PageTO;
-		   }
 		
 		
-		//동물 검색
-		public ArrayList<BoardTO> getList(BoardTO to, PageTO pages,SortTO sort){
-			//검색
-			String category = to.getCategorySeq();
-			
+		
+		
+		
+		//말머리만 클릭시
+		public ArrayList<BoardTO> getSubTitleList(String category,String subtitle, PageTO pages){
 			
 			Connection conn = null;
 		    PreparedStatement pstmt = null;
 		    ResultSet rs = null;
 			
-		    
+		   
 			ArrayList<BoardTO> datas = new ArrayList<BoardTO>();
 			
 			try {
 				conn = this.dataSource.getConnection();
 				
-				
-				
-				String sql="select * from board where category_seq=? order by seq desc limit ?, ?";
-				pstmt.setString(1,to.getCategorySeq());
-					
-				
-				
+				String sql="select * from board where category_seq=? and sub_title=? order by seq desc limit ?, ?";
 				pstmt = conn.prepareStatement(sql);
+				
+				pstmt.setString(1,category);
+				pstmt.setString(2,subtitle);
+				pstmt.setInt(3,(pages.getCpage()-1)*pages.getRecordPerPage());
+				pstmt.setInt(4, pages.getRecordPerPage());
+				
 				rs = pstmt.executeQuery();
+				
+				while(rs.next()) {
+					BoardTO to = new BoardTO();
+					to.setSeq(rs.getString("seq"));
+					to.setSubTitle(rs.getString("sub_title"));
+					to.setSaleStatus(rs.getString("sale_status"));
+					to.setFamilyMemberType(rs.getString("family_member_type"));
+					to.setTitle(rs.getString("title"));
+					to.setNickname(rs.getString("nickname"));
+					to.setLikeCount(rs.getString("like_count"));
+					to.setHit(rs.getString("hit"));
+					to.setCreatedAt(rs.getString("created_at"));
+					datas.add(to);
+				}
+				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			
-			
+			} finally {
+		         if( rs != null ) try { rs.close(); } catch( SQLException e ) {}
+		         if( pstmt != null ) try { pstmt.close(); } catch( SQLException e ) {}
+		         if( conn != null ) try { conn.close(); } catch( SQLException e ) {}
+		      }
 			
 			return datas;
 		}
+		
 }

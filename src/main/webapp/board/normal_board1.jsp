@@ -22,9 +22,12 @@
    
 
 	//검색했을때..
+	String category = request.getParameter("category");
 	String field = "title";
 	String keyword ="";
 	String sort="";
+	String subtitle="";
+	
 	if(request.getParameter("field") != null && !request.getParameter("field").equals("") ){
 		field =request.getParameter("field");
 	}
@@ -35,17 +38,18 @@
 	}
 
 	//정렬
-	
-	
 	if(request.getParameter("sort") != null && !request.getParameter("sort").equals("")){
 		sort = request.getParameter("sort");
 	}
 	
+	//말머리 클릭
+	if(request.getParameter("subtitle") != null && !request.getParameter("subtitle").equals("")){
+		subtitle = request.getParameter("subtitle");
+	}
 	
-//게시판 리스트
 	
-	//String category = String.valueOf(1);
-	String category = request.getParameter("category");
+	
+	//페이지
 	int cPage=1; //기본 페이지
 	
 	if(request.getParameter("page") != null && !request.getParameter("page").equals("") ){
@@ -58,7 +62,7 @@
 	PageTO pages = new PageTO();
 	pages.setCpage(cPage); 
 	
-	pages = dao.boardList(pages,category,field,keyword);
+	pages = dao.boardList(pages,category,field,keyword,subtitle);
 	int recordPerPage = pages.getRecordPerPage();
 	
 	int totalRecord = pages.getTotalRecord();
@@ -69,19 +73,23 @@
 	int endBlock = pages.getEndBlock();	
 	
 	
-	/******************게시글***************/
+/******************리스트 나타나기***************/
 
 StringBuilder sbHtml = new StringBuilder();
-ArrayList<BoardTO> result = null;
+ArrayList<BoardTO> result = dao.getList(category,cPage,perPage);
 
+
+
+//검색
 if(!field.equals("") && !keyword.equals("")){
-	result = dao.getSearchList(category, field, keyword, cPage, recordPerPage);
-} else if(!sort.equals("")){
-	result = dao.listSort(category, field, keyword, sort, cPage, perPage);
-} else {
-	result = dao.getList(category,cPage,perPage);
-}
+	result = dao.getSearchList(category, field, keyword, pages);
+} else if(!sort.equals("")){//인기순, 시간순
+	result = dao.listSort(category, field, keyword, sort, pages);
+} else if(!subtitle.equals("")){ 
+	result = dao.getSubTitleList(category, subtitle, pages);
+} 
 
+//리스트 생성
 	for(BoardTO to : result){
 		String seq = to.getSeq();
 		String subTitle = to.getSubTitle();
@@ -93,9 +101,8 @@ if(!field.equals("") && !keyword.equals("")){
 		String hit = to.getHit();
 		String createDate = to.getCreatedAt();
 		
-		//System.out.printf("%s, %s, %s, %s, %s, %s, %s \n", subTitle,saleStatus, memberType, title, likeCount, hit, createDate  );
-
-		//리스트..
+		//System.out.printf("내용: %s, %s, %s, %s, %s, %s, %s \n", subTitle,saleStatus, memberType, title, likeCount, hit, createDate  );
+	
 		
 		sbHtml.append("<li class='item'>");
 		sbHtml.append("	<div class='family-type'>");
@@ -103,7 +110,7 @@ if(!field.equals("") && !keyword.equals("")){
 		sbHtml.append("	</div>");
 		sbHtml.append("	<div class='list-title_wrap'>");
 		sbHtml.append("		<div class='list-sub_title'>");
-		sbHtml.append("			<a class='sub_title-item'>"+subTitle+"</a>");
+		sbHtml.append("			<a class='sub_title-item' name='sub_title-item' href='?category="+category+"&subtitle="+subTitle+"'>"+subTitle+"</a>");
 		sbHtml.append("		</div>");
 		sbHtml.append("		<div class='list-title'>");
 		sbHtml.append("		<a href='?category="+category+"&seq="+seq+"' class='title-item'>"+title+"</a>");
@@ -148,7 +155,7 @@ if(!field.equals("") && !keyword.equals("")){
 	rel="stylesheet" />
 <link rel="stylesheet" href="../css/board.css" />
 <link rel="stylesheet" href="../css/menu.css" />
-<%
+<%-- <%
 		if(flag == 1){ //비로그인 시
 			out.println("<script src='../js/menu_logOut.js' defer></script>");
 		}else{ // 로그인시
@@ -156,7 +163,7 @@ if(!field.equals("") && !keyword.equals("")){
 			out.println("<script src='../js/menu_logeIn.js' defer></script>");
 		}
 	
-	%>
+	%> --%>
 <!-- 아이콘-->
 <link
 	href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css"
@@ -244,7 +251,7 @@ if(!field.equals("") && !keyword.equals("")){
 									if(startBlock == 1){
 										out.println("");
 									}else{
-										out.println("<li class='prev'><a href='?category="+category+"&field="+field+"&keyword="+keyword+"&sort="+sort+"&page="+(startBlock-blockPerPage)+"'>◀</a></li>");
+										out.println("<li class='prev'><a href='?category="+category+"&field="+field+"&keyword="+keyword+"&sort="+sort+"&subtitle="+subtitle+"&page="+(startBlock-blockPerPage)+"'>◀</a></li>");
 
 									};
 									//숫자
@@ -252,7 +259,7 @@ if(!field.equals("") && !keyword.equals("")){
 										if(cPage == i){
 											out.println("<li><strong>"+i+"</strong></li>");
 										}else{
-											out.println("<li><a href='?category="+category+"&field="+field+"&keyword="+keyword+"&sort="+sort+"&page="+i+"'>"+i+"</a></li>");
+											out.println("<li><a href='?category="+category+"&field="+field+"&keyword="+keyword+"&sort="+sort+"&subtitle="+subtitle+"&page="+i+"'>"+i+"</a></li>");
 										};
 									};
 												                   
@@ -260,7 +267,7 @@ if(!field.equals("") && !keyword.equals("")){
 									if (endBlock == totalPage) {
 										out.println("");
 									} else {
-										out.println("<li class='next'><a href='?category="+category+"&field="+field+"&keyword="+keyword+"&sort="+sort+"&page="+ (startBlock + blockPerPage)+"'>▶</a></li>");
+										out.println("<li class='next'><a href='?category="+category+"&field="+field+"&keyword="+keyword+"&sort="+sort+"&subtitle"+subtitle+"&page="+ (startBlock + blockPerPage)+"'>▶</a></li>");
 									};
 									%>
 								</ul>
@@ -273,6 +280,7 @@ if(!field.equals("") && !keyword.equals("")){
 		</div>
 		<!-- 메인-->
 	</main>
-
+<!-- normalBord.js 추가 -->
+<script src='../js/normal_board.js'></script>
 </body>
 </html>
