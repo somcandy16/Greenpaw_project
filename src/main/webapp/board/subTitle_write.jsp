@@ -69,9 +69,13 @@ if (flag == 1) { //비로그인 시
           <div class="write_box_bg">
             <div class="content_outer">
               <ul class="sub_title">
-                <li class="sub_title-item"><label for="sub_title">말머리</label></li>
+                <li class="sub_title-title"><label for="sub_title">말머리</label></li>
                 <li class="title_input">
-                  <input type="text" id="sub_title" name="sub_title" placeholder="" maxlength="10" oninput="checkLength(this)" />
+                <!-- 추가 -->
+                  <select id="sub_title" class="sub_title-item">
+                    <option checked>잡담</option>
+                    <option>정보</option>
+                  </select>
                 </li>
               </ul>
               <ul class="content_title">

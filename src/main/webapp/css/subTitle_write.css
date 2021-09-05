@@ -197,8 +197,7 @@ body {
 }
 
 
-/**********소연 추가*************/
-/*subTitle(글씨 쓰는곳)*/
+/*subTitle*/
 .sub_title {
   /* border: 1px solid blueviolet; */
   background: #fcebeb;
@@ -209,8 +208,8 @@ body {
   border-radius: 30px;
 }
 
-.sub_title-item {
-  /* border: 1px solid green; */
+.sub_title-title {
+ /* border: 1px solid green; */
  width: 160px;
  text-align: center;
  line-height: 5vh;
@@ -218,10 +217,13 @@ body {
  border-radius: 30px;
  padding:0px 7.5px 0px 7.5px;
  color:white;
+ 
 }
 
+/* 
+인풋일떄..
 .sub_title_input {
-  /* border: 1px solid red; */
+  border: 1px solid red;
   width: 77%;
   margin-left: 2%;
 }
@@ -229,10 +231,44 @@ body {
 .sub_title_input input {
   outline: none;
   border: none;
-  /* border: 1px solid red; */
+  border: 1px solid red;
   text-indent: 20px;
   font-size: 18px;
   line-height: 5vh;
   width: 100%;
   background: rgba(255, 255, 255, 0);
+} */
+
+
+/*말머리 selectbox*/
+.sub_title-item {
+  border:none;
+  border-radius: 30%;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #fcebeb;
+  width:90%;
+  outline:none;
+  font-size: 16px;
+  color:rgb(252, 95, 121);
+  font-weight: bold;
+  text-align: center;
+  height: 5vh;
+  cursor: pointer;
+ 
 }
+
+.sub_title-item select::-ms-expand {
+  display:none;
+}
+
+.sub_title-item option {
+  letter-spacing: 1.2px;
+  font-weight: 400;
+  font-size: 18px;
+}
+
+selected {
+	display:none;
+}
+
