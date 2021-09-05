@@ -45,14 +45,20 @@ String category = request.getParameter("category");
 <!-- <link rel="stylesheet" href="../css/main.css" /> -->
 <link rel="stylesheet" href="../css/menu.css" />
 <link rel="stylesheet" href="../css/subTitle_write.css" />
+
  <%
-if (flag == 1) { //비로그인 시
-	out.println("<script src='../js/menu_logOut.js' defer></script>");
-} else { // 로그인시
-	out.println("<script src='../js/main_logIn.js' defer></script>");
-	out.println("<script src='../js/menu_logeIn.js' defer></script>");
-}
+	if(flag == 1){ //비로그인 시
+		out.println("<script type='text/javascript'>");
+		out.println("alert('로그인 후 이용 가능합니다.');");
+		out.println("location.href='../sign_in.jsp';");
+		out.println("</script>");
+		out.println("<script src='../js/menu_logOut.js' defer></script>");
+	}else{ // 로그인시
+		out.println("<script src='../js/menu_logeIn.js' defer></script>");
+	}
+
 %>
+
 
 </head>
 <body>
