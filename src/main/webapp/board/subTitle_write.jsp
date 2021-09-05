@@ -107,10 +107,10 @@ String category = request.getParameter("category");
         <div class="album_right">
           <ul class="menu">
             <li class="list">
-              <a href="#">list</a>
+              <a href="./normal_board1.jsp?category=${param.category }">list</a>
             </li>
             <li class="new">
-              <a href="#">new</a>
+              <a href="./subTitle_write.jsp?category=${param.category }">new</a>
             </li>
           </ul>
         </div>

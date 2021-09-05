@@ -180,11 +180,7 @@ body {
 .list {
   margin-top: 15px;
 }
-.new a,
-.list a {
-  color: #166816e1;
-  font-weight: 500;
-}
+
 /* .list a::before {
   content: "✔";
   border: 1px solid red;
@@ -194,6 +190,10 @@ body {
   content: "+";
   /* border: 1px solid red; */
   margin: 2px 2px 0 2px;
+}
+
+.tui-tooltip{
+	display: none;
 }
 
 
